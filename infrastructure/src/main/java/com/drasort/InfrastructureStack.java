@@ -2,6 +2,9 @@ package com.drasort;
 
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.RemovalPolicy;
+import software.amazon.awscdk.services.apigateway.CorsOptions;
+import software.amazon.awscdk.services.apigateway.LambdaIntegration;
+import software.amazon.awscdk.services.apigateway.RestApi;
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.BillingMode;
@@ -12,6 +15,8 @@ import software.amazon.awscdk.services.lambda.Runtime;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+
+import java.util.List;
 
 public class InfrastructureStack extends Stack {
     public InfrastructureStack(final Construct scope, final String id) {
@@ -55,5 +60,26 @@ public class InfrastructureStack extends Stack {
                 .build();
 
         dragonTable.grantReadWriteData(dragonFunction);
+
+        var api = RestApi.Builder.create(this, "DragonApi")
+                .restApiName("Dragon Resort API")
+                .description("Serverless Dragon Resort API")
+                .defaultCorsPreflightOptions(CorsOptions.builder()
+                        .allowOrigins(List.of("*"))
+                        .allowMethods(List.of("GET", "POST", "PUT", "DELETE")).build())
+                .build();
+
+        var lambdaIntegration = new LambdaIntegration(dragonFunction);
+
+
+        // Add resources and methods for CRUD operations
+        var dragons = api.getRoot().addResource("dragons");
+        dragons.addMethod("POST", lambdaIntegration);
+        dragons.addMethod("GET", lambdaIntegration);
+
+        var dragon = dragons.addResource("{id}");
+        dragon.addMethod("GET", lambdaIntegration);
+        dragon.addMethod("PUT", lambdaIntegration);
+        dragon.addMethod("DELETE", lambdaIntegration);
     }
 }
