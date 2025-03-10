@@ -17,6 +17,7 @@ import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
 import java.util.List;
+import java.util.Map;
 
 public class InfrastructureStack extends Stack {
     public InfrastructureStack(final Construct scope, final String id) {
@@ -37,26 +38,20 @@ public class InfrastructureStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
 
+        Map<String, String> environmentVariables = Map.of(
+                "DYNAMODB_TABLE_NAME", dragonTable.getTableName(),
+                "DYNAMODB_ENDPOINT", ""
+        );
+
         var dragonFunction = Function.Builder.create(this, "DragonResortApp")
+                .runtime(Runtime.JAVA_21)
                 .functionName("DragonResort")
-                .description("Application to handle our guest in our Dragon Resort")
-                .runtime(Runtime.NODEJS_22_X)
-                .handler("index.handler")
-                .code(Code.fromInline(
-                        "exports.handler = async function(event, context) {\n" +
-                                "  return {\n" +
-                                "    statusCode: 501,\n" +
-                                "    headers: {\n" +
-                                "      'Content-Type': 'application/json'\n" +
-                                "    },\n" +
-                                "    body: JSON.stringify({\n" +
-                                "      message: 'Sorry, no Dragons allowed in our 5 STAR Resort!'\n" +
-                                "    })\n" +
-                                "  };\n" +
-                                "}"
-                ))
+                .code(Code.fromAsset("../application/assets/DragonResort.jar"))
+                .handler("com.dragonresort.DragonResort::handleRequest")
+                .description("Dragon Resort Lambda Function")
                 .timeout(Duration.seconds(30))
                 .memorySize(128)
+                .environment(environmentVariables)
                 .build();
 
         dragonTable.grantReadWriteData(dragonFunction);
