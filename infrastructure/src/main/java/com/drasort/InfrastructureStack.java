@@ -47,7 +47,7 @@ public class InfrastructureStack extends Stack {
                 .runtime(Runtime.JAVA_21)
                 .functionName("DragonResort")
                 .code(Code.fromAsset("../application/assets/DragonResort.jar"))
-                .handler("com.dragonresort.DragonResort::handleRequest")
+                .handler("com.drasort.DragonResort::handleRequest")
                 .description("Dragon Resort Lambda Function")
                 .timeout(Duration.seconds(30))
                 .memorySize(128)
