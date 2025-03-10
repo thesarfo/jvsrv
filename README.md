@@ -1,4 +1,4 @@
-This project is a serverless API for managing records stored in an Amazon DynamoDB table using AWS CDK for Infrastructure provisioning.
+This is a serverless API for managing records stored in an Amazon DynamoDB table using AWS CDK for Infrastructure provisioning.
 
 ### Core AWS Services Used:
 - Amazon DynamoDB
@@ -10,7 +10,7 @@ This project is a serverless API for managing records stored in an Amazon Dynamo
 - CloudWatch 
 - AWS Lambda Insights
 
-## Architecture
+### Architecture
 <img src="images/drasort_architecture.png" alt="Architecture Diagram"/>
 
 
@@ -29,23 +29,23 @@ The [unleash dragons](infrastructure/events/unleash_dragons.sh) script simulates
 ## Monitoring & Performance Insights
 This API integrates with three core monitoring tools
 
-1. ### **CloudWatch**
+#### **CloudWatch**
 
   <img src="images/cloudwatch_metrics.png" alt="CloudWatch Metrics" width="600"/>
 
 
 
-2. ### **X-Ray**
+#### **X-Ray**
 
 <img src="images/xray_traces.png" alt="X-Ray Traces" width="600"/>
 
-3. ### **Lambda Insights**
+#### **Lambda Insights**
 
 <img src="images/lambda_insights.png" alt="Lambda Insights" width="600"/>
 
 
 
-## Deploy to AWS
+### Deploy to AWS
 
 1. **Install AWS CDK:**
     ```sh
@@ -59,4 +59,9 @@ This API integrates with three core monitoring tools
     ```sh
     cd infrastructure
     cdk deploy
+    ```
+
+4. **Delete the infrastructure:**
+    ```sh
+    cdk destroy
     ```
