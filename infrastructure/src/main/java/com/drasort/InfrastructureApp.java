@@ -8,7 +8,8 @@ public class InfrastructureApp {
     public static void main(final String[] args) {
         App app = new App();
 
-        new InfrastructureStack(app, "InfrastructureStack", StackProps.builder()
+        new InfrastructureStack(app, "Dragon-Resort-Application", StackProps.builder()
+                .description("This stack includes resources needed for our Dragon Resort Management System")
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,
                 // but a single synthesized template can be deployed anywhere.
