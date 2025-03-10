@@ -5,13 +5,16 @@ import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.services.apigateway.CorsOptions;
 import software.amazon.awscdk.services.apigateway.LambdaIntegration;
 import software.amazon.awscdk.services.apigateway.RestApi;
+import software.amazon.awscdk.services.apigateway.StageOptions;
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.lambda.Code;
 import software.amazon.awscdk.services.lambda.Function;
+import software.amazon.awscdk.services.lambda.LambdaInsightsVersion;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.Tracing;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -52,6 +55,8 @@ public class InfrastructureStack extends Stack {
                 .timeout(Duration.seconds(30))
                 .memorySize(128)
                 .environment(environmentVariables)
+                .tracing(Tracing.ACTIVE)
+                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_333_0)
                 .build();
 
         dragonTable.grantReadWriteData(dragonFunction);
@@ -59,9 +64,14 @@ public class InfrastructureStack extends Stack {
         var api = RestApi.Builder.create(this, "DragonApi")
                 .restApiName("Dragon Resort API")
                 .description("Serverless Dragon Resort API")
+                .deployOptions(StageOptions.builder()
+                        .tracingEnabled(true)
+                        .dataTraceEnabled(true)
+                        .build())
                 .defaultCorsPreflightOptions(CorsOptions.builder()
-                        .allowOrigins(List.of("*"))
-                        .allowMethods(List.of("GET", "POST", "PUT", "DELETE")).build())
+                        .allowOrigins(java.util.List.of("*"))
+                        .allowMethods(java.util.List.of("GET", "POST", "PUT", "DELETE"))
+                        .build())
                 .build();
 
         var lambdaIntegration = new LambdaIntegration(dragonFunction);
